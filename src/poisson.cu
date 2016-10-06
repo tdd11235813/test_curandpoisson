@@ -11,7 +11,6 @@ float run_cuda( const Parameters& _parameters )
   cudaEvent_t custart, cuend;
   float ms=0.f;
 
-  data.poisson_numbers_h = new T[_parameters.n];
 
   CHECK_CUDA( cudaEventCreate(&custart) );
   CHECK_CUDA( cudaEventCreate(&cuend) );
@@ -38,22 +37,24 @@ float run_cuda( const Parameters& _parameters )
   CHECK_CUDA( cudaEventSynchronize(cuend) );
   CHECK_CUDA( cudaEventElapsedTime(&ms, custart, cuend) );
 
-  CHECK_CUDA( cudaMemcpy(data.poisson_numbers_h, data.poisson_numbers_d, _parameters.n*sizeof(T), cudaMemcpyDeviceToHost) );
+  if(_parameters.dump) {
+
+    data.poisson_numbers_h = new T[_parameters.n];
+    CHECK_CUDA( cudaMemcpy(data.poisson_numbers_h, data.poisson_numbers_d, _parameters.n*sizeof(T), cudaMemcpyDeviceToHost) );
+    std::ofstream fs;
+
+    fs.open("dump.csv", std::ofstream::out);
+    for( auto i=0; i<_parameters.n; ++i ) {
+      fs << data.poisson_numbers_h[i] << std::endl;
+    }
+    fs.close();
+    std::cout <<_parameters.n<< " Poisson numbers dumped to dump.csv." << std::endl;
+    delete[] data.poisson_numbers_h;
+  }
 
   CHECK_CUDA( cudaEventDestroy(custart) );
   CHECK_CUDA( cudaEventDestroy(cuend) );
   CHECK_CUDA( cudaFree(data.poisson_numbers_d) );
-
-
-  std::ofstream fs;
-
-  fs.open("dump.csv", std::ofstream::out);
-  for( auto i=0; i<_parameters.n; ++i ) {
-    fs << data.poisson_numbers_h[i] << std::endl;
-  }
-  fs.close();
-  std::cout <<_parameters.n<< " Poisson numbers dumped to dump.csv." << std::endl;
-  delete[] data.poisson_numbers_h;
 
   return ms;
 }
@@ -63,8 +64,11 @@ int main(int argc, char** argv)
   Parameters parameters;
   if(argc>=2)
     parameters.n = atoi(argv[1]);
-  if(argc==3)
+  if(argc>=3)
     parameters.lambda = atof(argv[2]);
+  if(argc>=4)
+    parameters.dump = atoi(argv[3]);
+  std::cout << listCudaDevices().str();
   float ms = run_cuda<unsigned>(parameters);
   std::cout << std::endl << parameters.n << " Poisson numbers with lambda = " << parameters.lambda << std::endl;
   std::cout << " ... generated on device in: " << ms << " ms" << std::endl;
