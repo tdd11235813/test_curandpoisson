@@ -26,6 +26,7 @@ struct Parameters
   double lambda = 11e+7;
   size_t n = 32768;
   bool dump = false;
+  unsigned api_mode = 1; // 0 - host-api, 1 - device-api
 };
 
 // ----------------------------------------------------------------------------
