@@ -21,7 +21,7 @@ xhist <- c(min(h$breaks),h$breaks)
 yhist <- c(0,h$density,0)
 xfit <- min(x.poi):max(x.poi)
 yfit <- dpois(xfit,lambda=lambda.est)
-plot(xhist,yhist,type="s",ylim=c(0,max(yhist,yfit)), main="Poison density and histogram")
+plot(xhist,yhist,type="s",ylim=c(0,max(yhist,yfit)), main="Poisson density and histogram")
 lines(xfit,yfit, col="red")
 
                                         #Perform the chi-square goodness of fit test

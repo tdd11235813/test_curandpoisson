@@ -15,7 +15,6 @@
 template<typename T>
 struct Data
 {
-  curandState *devStates;
   T* poisson_numbers_d = nullptr;
   T* poisson_numbers_h = nullptr;
 };
