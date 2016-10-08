@@ -69,6 +69,9 @@ int main(int argc, char** argv)
   if(argc>=4)
     parameters.dump = atoi(argv[3]);
   std::cout << listCudaDevices().str();
+  std::cout << "n      = " << parameters.n << std::endl
+            << "lambda = " << parameters.lambda << std::endl
+            << "dump?  = " << (parameters.dump?"yes":"no") << std::endl;
   float ms = run_cuda<unsigned>(parameters);
   std::cout << std::endl << parameters.n << " Poisson numbers with lambda = " << parameters.lambda << std::endl;
   std::cout << " ... generated on device in: " << ms << " ms" << std::endl;
